@@ -1,0 +1,15 @@
+This is a mirror of http://www.vim.org/scripts/script.php?script_id=1059
+
+This will add a menu item in gvim called 'Color' that will allow you to insert a web style hex color value (like '#ffffff'), or python RGB tuple (like (255,255,255) ) after the current line (if you know how to insert at current position, send me an email: david.konsumer at gmail. )
+
+Screenshot: http://konsumer.memebot.com/vim_color_select.png
+
+Included is a python script called 'color_select' that requires pygtk.
+
+In windows, you could write one using VB, or install python and pygtk to use it.
+
+Maybe eventually I'll write a wxwindows dialog for everybody.
+
+The reason I did this, instead of using http://www.vim.org/scripts/script.php?script_id=927 was that I wanted to be able to grab color values from the screen, and I like the gtk2 color dialog alot.
+
+I tested this on Debian unstable with gvim 6.3, python  2.3.4 and pygtk 2.

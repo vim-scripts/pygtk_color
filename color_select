@@ -1,0 +1,68 @@
+#!/usr/bin/env python
+import sys,gtk,getopt
+
+def main(argv):
+    try:
+        opts, args = getopt.getopt(argv[1:], "hrd:v", ["hex","rgb","default="])
+    except getopt.GetoptError:
+        return 2
+    
+    mode='hex'
+    default='#ffffff'
+    for (k, v) in opts:
+        if k in ("-h","--hex"): mode = 'hex'
+        if k in ("-r","--rgb"): mode = 'rgb'
+        if k in ("-d","--default"): default = v
+    
+    color_dialog=ColorSelector(default=HTMLColorToRGB(default))
+    color=color_dialog.get_value()
+    if mode == 'hex': color=RGBToHTMLColor(color)
+    sys.stdout.write(str(color))
+
+def RGBToHTMLColor(rgb_tuple):
+    """ convert an (R, G, B) tuple to #RRGGBB """
+    hexcolor = '#%02x%02x%02x' % rgb_tuple
+    # that's it! '%02x' means zero-padded, 2-digit hex values
+    return hexcolor
+
+def HTMLColorToRGB(colorstring):
+    """ convert #RRGGBB to an (R, G, B) tuple """
+    colorstring = colorstring.strip()
+    if colorstring[0] == '#': colorstring = colorstring[1:]
+    if len(colorstring) != 6:
+        raise ValueError, "input #%s is not in #RRGGBB format" % colorstring
+    r, g, b = colorstring[:2], colorstring[2:4], colorstring[4:]
+    r, g, b = [int(n, 16) for n in (r, g, b)]
+    return (r, g, b)
+
+
+
+class ColorSelector(gtk.Dialog):
+    def __init__(self, default=(0, 0, 0)):
+		gtk.Dialog.__init__(self)
+		self.set_size_request(100, 20)
+		self.color = self.get_colormap().alloc_color(*map(lambda x: x*0x101,default))
+		self.update_color()
+		self.show_dialog()
+    
+    def update_color(self):
+		style = self.get_style().copy()
+		style.bg[gtk.STATE_NORMAL] = self.color
+		style.bg[gtk.STATE_PRELIGHT] = self.color
+		self.set_style(style)
+		self.queue_draw()
+
+    def show_dialog(self):
+		dialog = gtk.ColorSelectionDialog("Select Color")
+		dialog.colorsel.set_current_color(self.color)
+		dialog.show()
+		response = dialog.run()
+		if response == gtk.RESPONSE_OK:
+		    self.color = dialog.colorsel.get_current_color()
+		    self.update_color()
+		dialog.destroy()
+	    
+    def get_value(self):
+		return (self.color.red/257, self.color.green/257, self.color.blue/257)
+
+if __name__ == '__main__': sys.exit(main(sys.argv))
